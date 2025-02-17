@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Instituto Mixto de Educación Básica</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 20px;
+        }
+        h1, h2 {
+            color: #2e8b57;
+        }
+        h3 {
+            color: #4682b4;
+        }
+        label, p, textarea {
+            display: block;
+            margin-bottom: 10px;
+        }
+        input, select, button, textarea {
+            padding: 10px;
+            margin-bottom: 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .result {
+            background-color: #dff0d8;
+            color: #3c763d;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 10px;
+        }
+        .question {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .question p {
+            flex: 1;
+            font-size: 18px;
+        }
+        .question label {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .radio-group {
+            display: flex;
+            align-items: center;
+        }
+        .radio-group label {
+            margin-right: 20px;
+            display: flex;
+            align-items: center;
+        }
+    </style>
+    <script>
+        var currentPage = 1;
+
+        function showForm() {
+            var grade = document.getElementById("grade").value;
+            if (grade) {
+                document.getElementById("gradeForm").style.display = "none";
+                document.getElementById("studentForm").style.display = "block";
+                document.getElementById("quiz").innerHTML = getQuiz(grade);
+                updateButtons(document.getElementsByClassName("question").length);
+            }
+        }
+
+        function getQuiz(grade) {
+            var quiz = '';
+            if (grade === "1") {
+                quiz = `
+                    <h3>Cuestionario - Primero Básico</h3>
+                    ${getFirstGradeQuestions()}
+                `;
+            } else if (grade === "2") {
+                quiz = `
+                    <h3>Instrucciones - Segundo Básico</h3>
+                    <p>Realiza un programa con un Sprite en donde este calcule la edad actual de la persona.</p>
+                    <textarea placeholder="Describe los bloques utilizados"></textarea><br>
+                    <button onclick="thankYou()">Enviar</button>
+                `;
+            } else if (grade === "3") {
+                quiz = `
+                    <h3>Cuestionario - Tercero Básico</h3>
+                    ${getThirdGradeQuestions()}
+                `;
+            }
+            return quiz;
+        }
+
+        function getFirstGradeQuestions() {
+            const questions = [
+                "¿Es la tecnología esencial para el desarrollo de la sociedad?",
+                "¿Consideras que la tecnología puede aumentar la productividad?",
+                "¿Crees que la tecnología siempre tiene un impacto positivo en la salud?",
+                "¿Sabrías identificar las partes principales del teclado y el mouse?",
+                "¿La mecanografía es una habilidad útil para cualquier persona?",
+                "¿Es importante mantener una postura correcta al usar el ordenador para evitar lesiones?",
+                "¿El software es la parte tangible de una computadora?",
+                "¿El hardware incluye componentes como la CPU y la memoria RAM?",
+                "¿La tecnología puede mejorar la comunicación entre las personas?",
+                "¿Piensas que la tecnología puede tener desventajas como la adicción a los dispositivos?"
+            ];
+            return generateQuestionForm(questions);
+        }
+
+        function getThirdGradeQuestions() {
+            const questions = [
+                "¿Se pueden crear macros en Excel para automatizar tareas?",
+                "¿Excel permite trabajar con bases de datos relacionales directamente dentro de una hoja de cálculo?",
+                "¿Es posible realizar análisis de regresión en Excel sin complementos adicionales?",
+                "¿Se puede proteger una hoja de cálculo en Excel contra modificaciones sin usar contraseñas?",
+                "¿Excel incluye una función llamada 'Búsqueda de Objetivo' para encontrar un valor específico cambiando otro?",
+                "¿Es posible crear tablas dinámicas basadas en datos externos en Excel?",
+                "¿Excel puede realizar cálculos automáticos sin la necesidad de fórmulas?",
+                "¿Se pueden insertar controles de formulario, como botones y listas desplegables, en una hoja de cálculo de Excel?",
+                "¿Excel permite trabajar con datos en tiempo real a través de conexiones a fuentes de datos externas?",
+                "¿Es posible crear gráficos en Excel utilizando únicamente texto sin ningún dato numérico?"
+            ];
+            return generateQuestionForm(questions);
+        }
+
+        function generateQuestionForm(questions) {
+            let form = '';
+            questions.forEach((question, index) => {
+                form += `
+                    <div class="question" id="question${index + 1}" style="display: ${index < 5 ? 'block' : 'none'};">
+                        <p>${question}</p>
+                        <div class="radio-group">
+                            <label><input type="radio" name="q${index}" value="Sí"> Sí</label>
+                            <label><input type="radio" name="q${index}" value="No"> No</label>
+                        </div>
+                    </div>
+                `;
+            });
+            form += `
+                <div class="nav-buttons">
+                    <button onclick="previousPage()">Anterior</button>
+                    <button onclick="nextPage()">Siguiente</button>
+                    <button onclick="checkAnswers()" style="display: none;" id="submitBtn">Enviar</button>
+                </div>
+            `;
+            return form;
+        }
+
+        function nextPage() {
+            var totalQuestions = document.getElementsByClassName("question").length;
+            for (var i = (currentPage - 1) * 5; i < currentPage * 5; i++) {
+                document.getElementById(`question${i + 1}`).style.display = 'none';
+            }
+            currentPage++;
+            for (var i = (currentPage - 1) * 5; i < currentPage * 5 && i < totalQuestions; i++) {
+                document.getElementById(`question${i + 1}`).style.display = 'block';
+            }
+            updateButtons(totalQuestions);
+        }
+
+        function previousPage() {
+            var totalQuestions = document.getElementsByClassName("question").length;
+            for (var i = (currentPage - 1) * 5; i < currentPage * 5; i++) {
+                document.getElementById(`question${i + 1}`).style.display = 'none';
+            }
+            currentPage--;
+            for (var i = (currentPage - 1) * 5; i < currentPage * 5 && i < totalQuestions; i++) {
+                document.getElementById(`question${i + 1}`).style.display = 'block';
+            }
+            updateButtons(totalQuestions);
+        }
+
+        function updateButtons(totalQuestions) {
+            if (currentPage * 5 >= totalQuestions) {
+                document.getElementById("submitBtn").style.display = 'block';
+            } else {
+                document.getElementById("submitBtn").style.display = 'none';
+            }
+        }
+
+        function checkAnswers() {
+            var correctAnswers = [
+                "Sí", "Sí", "No", "Sí", "Sí", "Sí", "No", "Sí", "Sí", "Sí"
+            ];
+            var score = 0;
+            for (var i = 0; i < correctAnswers.length; i++) {
+                var radios = document.getElementsByName(`q${i}`);
+                for (var j = 0; j < radios.length; j++) {
+                    if (radios[j].checked && radios[j].value === correctAnswers[i]) {
+                        score++;
+                        break;
+                    }
+                }
+            }
+            var name = document.getElementById("name").value;
+            displayResult(name, score);
+        }
+
+        function displayResult(name, score) {
+            const messages = [
+                "¡Sigue esforzándote! El camino al éxito está lleno de desafíos, pero cada paso te acerca más.",
+                "¡Excelente trabajo! Tu dedicación y esfuerzo están dando frutos.",
+                "¡Muy bien hecho! Sigue así y alcanzarás todas tus metas."
+            ];
+            const message = messages[Math.floor(Math.random() * messages.length)];
+            document.body.innerHTML = `
+                <div class="container result">
+                    <h2>Resultado Final</h2>
+                    <p>${name}, tu nota final es: ${score}/10</p>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+
+        function thankYou() {
+            var name = document.getElementById("name").value;
+            displayResult(name, "Gracias por participar.");
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Instituto Mixto de Educación Básica por cooperativa de Enseñanza “La colina”</h1>
+        <h2>Curso: Tecnologías del aprendizaje y la comunicación</h2>
+        <div id="gradeForm">
+            <label for="grade">Ingresa tu grado:</label>
+            <select id="grade" onchange="showForm()">
+                <option value="">Selecciona tu grado</option>
+                <option value="1">Primero básico</option>
+                <option value="2">Segundo básico</option>
+                <option value="3">Tercero básico</option>
+            </select>
+        </div>
+
+        <div id="studentForm" style="display:none;">
+            <label for="section">¿Cuál es tu sección?</label>
+            <input type="text" id="section"><br><br>
+
+            <label for="name">Tu nombre completo:</label>
+            <input type="text" id="name"><br><br>
+
+            <div id="quiz"></div>
+        </div>
+    </div>
+</body>
+</html>
